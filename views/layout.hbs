@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="ap-local-base-url" content="{{localBaseUrl}}">
+  <title>{{title}}</title>
+  {{!-- <link rel="stylesheet" href="//aui-cdn.atlassian.com/aui-adg/5.8.12/css/aui.css" media="all"> --}}
+  {{!-- <link rel="stylesheet" href="//aui-cdn.atlassian.com/aui-adg/5.8.12/css/aui-experimental.css" media="all"> --}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aui/9.4.0/aui/aui-prototyping.min.css" media="all">
+  <!--[if IE 9]><link rel="stylesheet" href="//aui-cdn.atlassian.com/aui-adg/5.8.12/css/aui-ie9.css" media="all"><![endif]-->
+  <link rel="stylesheet" href="/css/addon.css" type="text/css" />
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aui/9.4.5/aui/aui-prototyping.min.js"></script>
+  {{!-- <script src="//aui-cdn.atlassian.com/aui-adg/5.8.12/js/aui.js" type="text/javascript"></script>
+  <script src="//aui-cdn.atlassian.com/aui-adg/5.8.12/js/aui-soy.js" type="text/javascript"></script>
+  <script src="//aui-cdn.atlassian.com/aui-adg/5.8.12/js/aui-datepicker.js"></script>
+  <script src="//aui-cdn.atlassian.com/aui-adg/5.8.12/js/aui-experimental.js"></script> --}}
+  <script src="https://connect-cdn.atl-paas.net/all.js" type="text/javascript"></script>
+  <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+  
+  <style>
+    /** table#issuelist>thead>tr:hover td {
+      background-color: #deebff;
+    } **/
+    table#issuelist>thead>tr>th {
+      color: #fff;
+      font-size: 14px;
+    }
+
+    table#sublist>thead>tr>th {
+      color: #000;
+      font-size: 14px;
+    }
+
+    .ta-pa-10 {
+      padding: 10px;
+    }
+    .ta-pt-10 {
+      padding: 10px 0px 0px 0px;
+    }
+    .ta-pb-10 {
+      padding: 0px 0px 10px 0px;
+    }
+    .ta-pl-10 {
+      padding: 0px 0px 0px 10px;
+    }
+    .ta-pr-10 {
+      padding: 0px 10px 0px 0px;
+    }
+    .ta-pv-10 {
+      padding: 10px 0px 10px 0px;
+    }
+    .ta-ph-10 {
+      padding: 0px 10px 0px 10px;
+    }
+    .ta-ph-40 {
+      padding: 10px 40px 0px 40px !important;
+    }
+    .ta-mr-20 {
+      margin: 0px 20px 0px 0px !important;
+    }
+    .inline {
+      display: inline-block !important;
+    }
+
+    .flex {
+      display: flex;
+    }
+    .align-items-end {
+      align-items: flex-end;
+    }
+    .justify-content-center {
+      justify-content: center;
+    }
+  </style>
+</head>
+<body class="aui-page-hybrid">
+  <section id="content" role="main">
+    {{{body}}}
+  </section>
+  <script src="/js/addon.js"></script>
+</body>
+</html>

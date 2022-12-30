@@ -1,0 +1,203 @@
+{{!< layout}}
+
+<script>
+  var currentAssignee;
+  var currentStatus;
+  function callAPI() {
+    AP.request('/rest/api/3/search?fields=summary,assignee&expand=changelog', {
+      success: function(resp) {
+        const response = JSON.parse(resp);
+        console.log(response);
+        var issues = response.issues;
+      },
+      error: function(error) {
+        AP.flag.create({title: 'Error', body: JSON.stringify(error), type: 'error'});
+      }
+    });
+  }
+
+  $(document).ready(function() {
+    $('#status-dropdown').change(onStatusChange);
+    $('#assignee-dropdown').change(onAssigneeChange);
+  });
+
+  function onStatusChange(e) {
+    $('#assignee-dropdown')[0].value = "";
+    $('.status-duration-table').hide();
+    filterTable(e.target.innerText, 3);
+  }
+
+  function onAssigneeChange(e) {
+    $('#status-dropdown')[0].value = "";
+    currentAssignee = e.target.innerText;
+    $('.status-duration-table').hide();
+    filterTable(e.target.innerText, 1);
+  }
+
+  function issueClicked(target, data) {
+    const id = '#status-duration-table-' + data.key;
+    $('.status-duration-table').hide();
+    $(id).show();
+    // plotChart();
+    // console.log(target);
+    // console.log(data);
+  };
+
+  function filterTable(value, index) {
+    // Declare variables
+    var table, tr, td, i, txtValue;
+    table = document.getElementById("issuelist");
+    tr = table.getElementsByTagName("tr");
+    // tr = tr.filter((t) => t.className.includes('isssue-list-row'));
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[index];
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue === value && tr[i].className.includes('issue-list-row')) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }
+    }
+  }
+
+  function plotChart(target, data) {
+    const chartData = currentAssignee ? data.issues.filter(d => d.fields.assignee && d.fields.assignee.displayName === currentAssignee) : data.issues;
+    console.log(chartData);
+    $("#issuelist").width("60%");
+    $("#chartContainer").width("40%");
+    $("#chartContainer").CanvasJSChart({ //Pass chart options
+        title:{
+          text: ""
+        },
+        axisY: {
+          title: "Number of Issues"
+        },
+        data: [
+        {
+          type: "column", //change it to column, spline, line, pie, etc
+          dataPoints: [
+            { x: 1, y: chartData.filter(c => c.fields.status.name === "Backlog").length, label: 'Backlog' },
+            { x: 2, y: chartData.filter(c => c.fields.status.name === "In Progress").length, label: 'In Progress' },
+            { x: 3, y: chartData.filter(c => c.fields.status.name === "Done").length, label: 'Done' },
+            { x: 4, y: chartData.filter(c => c.fields.status.name === "Selected for Development").length, label: 'Selected for Development' },
+          ]
+        }
+      ]
+    });
+  }
+</script>
+<header class="aui-page-header">
+  <div class="aui-page-header-inner">
+    <div class="aui-page-header-main intro-header">
+      <h2>Issue Time Manager</h2>
+      <p class="subtitle">Welcome to the Issue Time Manager</p>
+    </div>
+  </div>
+</header>
+
+<div class="aui-page-panel main-panel">
+  <div class="aui-page-panel-inner">
+    <section class="aui-page-panel-item">
+
+      <!-- filters -->
+      <div class="aui-group">
+        <div class="aui-item">
+          <aui-label>
+            <h3>Filters</h3>
+          </aui-label>
+          <div class="ta-pv-10 flex align-items-end">
+              <form class="aui ta-mr-20">
+                <aui-label for="Assignee">Status:</aui-label>
+                <p>
+              <aui-select id="status-dropdown" name="status" placeholder="Select a status">
+                  {{#each statuses}}
+                      <aui-option interactive>{{this}}</aui-option>
+                    {{/each}}
+              </aui-select>
+              </p>
+              </form>
+              <form class="aui ta-mr-20">
+                <aui-label for="Assignee">Assignee:</aui-label>
+                <p>
+                  <aui-select id="assignee-dropdown" name="assignee" placeholder="Select an assignee">
+                      {{#each assignee}}
+                          <aui-option interactive>{{this}}</aui-option>
+                        {{/each}}
+                  </aui-select>
+                </p>
+              </form>
+          <button class="aui-button aui-button-primary" onclick="plotChart(this, {{json data}})">Show Chart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table of Issues -->
+      <div class="aui-group">
+        <div class="aui-item">
+          <div style="display:flex;">
+            <table id="issuelist" class="aui aui-table-list">
+                <thead style="background-color:#0052cc; color: #fff">
+                  <tr>
+                    <th>Issue</th>
+                    <th>Assignee</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="issue-list-body">
+                  {{#each data.issues}}
+                    <tr class="issue-list-row" onclick="issueClicked(this, {{json this}})" style="cursor:pointer;">
+                      <td id="{{this.key}}">
+                        <a target="_blank" href="https://saurabhatlassian.atlassian.net/browse/{{this.key}}">{{this.key}}</a>
+                      </td>
+                      <td class="assignee">{{this.fields.assignee.displayName}}</td>
+                      <td class="summary">{{this.fields.summary}}</td>
+                      <td>{{this.fields.status.name}}</td>
+                    </tr>
+                    <tr class="status-duration-table" id="status-duration-table-{{this.key}}" style="display:none;">
+                      <td colspan="3" class="ta-ph-40">
+                        <!--inside table -->
+                        <table id="sublist" class="aui aui-table-list">
+                          <thead style="background-color: #ccc">
+                            <tr>
+                              <th>Status</th>
+                              <th>Duration</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {{#each this.statusItems}}
+                              <tr class="aui">
+                                <td>{{this.toString}}</td>
+                                <td>{{this.duration}}</td>
+                              </tr>
+                            {{/each}}
+                          </tbody>
+                        </table>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+            <div id="chartContainer" style="padding:40px; height:400px;max-height:400px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+
+
+              {{!-- <button class="aui-button aui-dropdown2-trigger" aria-controls="status-dropdown">
+                  Status
+              </button> --}}
+              {{!-- <aui-dropdown-menu id="status-dropdown">
+                <aui-section label="">
+                    {{#each statuses}}
+                      <aui-item-checkbox interactive>{{this}}</aui-item-checkbox>
+                    {{/each}}
+                </aui-section>
+              </aui-dropdown-menu> --}}
