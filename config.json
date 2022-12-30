@@ -55,7 +55,7 @@
     // the NODE_ENV=production environment variable.
     "production": {
         // PaaS like Heroku will provide HTTP port via environement variable.
-        "port": "$PORT",
+        "port": 80,
         // Use views/unauthorized.hbs for error page.
         "errorTemplate": true,
         // Public URL to production app.
