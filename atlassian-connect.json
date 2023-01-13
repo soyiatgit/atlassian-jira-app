@@ -1,7 +1,7 @@
 {
-    "key": "time-app",
+    "key": "com.appjira.jira",
     "name": "Time app",
-    "description": "My very first app",
+    "description": "An atlassian-connect based Jira app",
     "baseUrl": "{{localBaseUrl}}",
     "authentication": {
         "type": "jwt"
@@ -10,7 +10,7 @@
         "installed": "/installed"
     },
     "scopes": [
-        "READ"
+        "ADMIN"
     ],
     "apiMigrations":{
         "signed-install": true
